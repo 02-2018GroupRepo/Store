@@ -1,10 +1,15 @@
+
+#password files
+application.properties
+
 #A combination of gitignore files for different IDEs and OS
 # Compiled class file
 *.class
 
 # Log file
 *.log
-
+*.idea
+*.xml
 # BlueJ files
 *.ctxt
 

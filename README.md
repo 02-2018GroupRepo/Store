@@ -1,7 +1,7 @@
 # Microservice Project
 The class has been separated into 9 teams: one store, three vendors, three suppliers, one purchase & resupply simulator and one financial analysis group. The first seven each have four members and are expected to use this project as a starting point, the last two consist of one pair each and may use this project or use s different approach altogether.
 
-## Store
+## bootcamp.Store
 This group has been tasked to create a store that is kept stocked by making purchases from the three vendors.  Purchases will be made randomly by the customer simulator based on the retail price that they set. The store will purchase merchandise via orders based on the wholesale price; receive stock and invoices from the vendor and pay invoices directly to each vendor.
 
 ## Vendors
@@ -19,7 +19,7 @@ This group has been tasked with setting the stock price for the store, vendors a
 
 ## Project Guidelines
 Each team will start with the following state: 
-### Store 
+### bootcamp.Store
 * Operating cash: $5750
 * Inventory:      None
 * Stock Price:    $47.50

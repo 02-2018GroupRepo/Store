@@ -1,14 +1,18 @@
 package bootcamp.config;
 
+import bootcamp.dao.ProductDao;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.web.client.RestTemplate;
 
 import bootcamp.model.products.Product;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -19,11 +23,22 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 @Configuration
 public class CommonConfig {
-	
-	@Qualifier("dataSource")
+    private final String GET_PRODUCTS = "SELECT id, name, description, retail_price, wholesale_price FROM product";
+
+    @Qualifier("dataSource")
 	@Autowired
 	DataSource dataSource;
-	
+
+	@Bean
+    @Qualifier("inventory")
+	Map<Integer, Integer> getInventory(){
+		Map<Integer,Integer> inv = new HashMap<>();
+		for (int i =0; i  < 60;i++){
+			inv.put(i+1,0);
+		}
+		return inv;
+	}
+
 	@Bean
 	public RestTemplate getRestTemplate() {
 		return new RestTemplate();
@@ -40,7 +55,8 @@ public class CommonConfig {
 	}
 	
 	@Bean List<Product> getProductList(){
-		return new ArrayList<>();
+	    JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+		return jdbcTemplate.query(GET_PRODUCTS, new BeanPropertyRowMapper<>(Product.class));
 	}
 	
 	@Bean

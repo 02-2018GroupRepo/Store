@@ -16,13 +16,18 @@ import bootcamp.model.products.Product;
 @Component
 public class ProductService {
 	 private static final Logger log = LoggerFactory.getLogger(ProductService.class);
-	 
+
+
+
+
 	 @Autowired
 	 private SimpleDateFormat dateFormat;
 	 
 	@Autowired
 	private ProductDao dao;
-	
+    {
+
+    }
 	
 	public Product getProductById(Integer id) {
 		return dao.getProductById(id);
