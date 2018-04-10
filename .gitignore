@@ -9,9 +9,11 @@ application.properties
 # Log file
 *.log
 *.idea
-*.xml
+*.iml
 # BlueJ files
 *.ctxt
+
+
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
