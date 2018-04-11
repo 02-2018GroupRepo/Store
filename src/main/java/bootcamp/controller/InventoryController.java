@@ -3,6 +3,8 @@ package bootcamp.controller;
 import java.util.List;
 import java.util.Map;
 
+import bootcamp.model.order.Order;
+import bootcamp.service.CustomerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,9 @@ public class InventoryController {
 	@Autowired
 	private InventoryService inventoryService;
 
+	@Autowired
+	private CustomerService customerService;
+
     @Autowired
     @Qualifier("inventory")
     private Map<Integer,Integer> inv;
@@ -32,10 +37,11 @@ public class InventoryController {
 		return inv;
 	}
 
-	@RequestMapping(name = "inventory/receive", method=RequestMethod.POST)
-    public void getProduct(@RequestBody List<Product> products) {
-		log.debug("Receiving products");
-    	inventoryService.receiveInventory(products); 
-    }
+	@RequestMapping(value = "inventory/purchase", method=RequestMethod.POST)
+	public void getPurchase(@RequestBody Order order){
+		System.out.println("----------HELLO there_______-");
+		log.debug("Purchasing an item");
+		customerService.receiveOrderFromCustomer(order);
+	}
 	
 }

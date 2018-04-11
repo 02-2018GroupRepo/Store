@@ -8,7 +8,11 @@ import java.util.concurrent.CompletableFuture;
 import bootcamp.Payment;
 import bootcamp.model.inventory.Inventory;
 import bootcamp.model.inventory.InventoryItem;
+
+import bootcamp.model.invoice.InvoiceItem;
+
 import bootcamp.model.invoice.Invoice;
+
 import bootcamp.model.order.Order;
 import com.sun.xml.internal.ws.util.CompletedFuture;
 import groovy.util.MapEntry;
@@ -26,6 +30,7 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class InventoryService {
 
+
     @Autowired
     private RestTemplate restTemplate;
     @Autowired
@@ -33,6 +38,7 @@ public class InventoryService {
 
 
     @Value("${vendor-a.url}")
+
     private String vendor1;
 
     @Value("${supplier-b.url}")
@@ -84,6 +90,7 @@ public class InventoryService {
         Map<String, BigDecimal> futures = new HashMap();
 
 
+
         try {
             log.info("before size " + futures.size());
             callVendor1 = getInventoryItem(vendor1, id);
@@ -99,12 +106,14 @@ public class InventoryService {
             log.info("Vendor 1 failed");
         }
 /*        try {
+
             callVendor2 = getInventoryItem(vendor2, id);
             if (callVendor2.get() != null && callVendor2.get().getNumber_available() >= 3)
 
                 futures.put(vendor2, callVendor2.get().getRetail_price());
 
         } catch (Exception e) {
+
             callVendor2 = new CompletableFuture<>();
 
            // log.info("Vendor 2 failed");
@@ -117,25 +126,22 @@ public class InventoryService {
                 futures.put(vendor3, callVendor3.get().getRetail_price());
 
         } catch (Exception e) {
+
             callVendor3 = new CompletableFuture<>();
 
             //log.info("Vendor 3 failed");
 
 
-<<<<<<< HEAD
-        }*/
 
-        // CompletableFuture.allOf(callVendor1, callVendor2, callVendor3).join();
-        if (futures.isEmpty()) {
-            log.info("no stores has product " + id);
+
+        CompletableFuture.allOf(callVendor1, callVendor2, callVendor3).join();
+        if (futures.isEmpty())
             return;
-        }
-        else
-            log.info(futures.size() + " afterwards");
-        Map.Entry<String, BigDecimal> lowest = new MapEntry("", new BigDecimal(1000));
+
+        Map.Entry<String, BigDecimal> lowest = new MapEntry("", 0);
         for (Map.Entry<String, BigDecimal> future : futures.entrySet()) {
             lowest =
-                    lowest.getValue().doubleValue() < future.getValue().doubleValue() ? lowest : future;
+                    lowest.getValue().doubleValue() > future.getValue().doubleValue() ? lowest : future;
 
         }
 
@@ -153,7 +159,16 @@ public class InventoryService {
     private Payment sendOrderAndReturnPayment(int id, String key) {
 
 
+        }
+
+        sendOrder(id, lowest.getKey());
+    }
+
+    @Async
+    private void sendOrder(int id, String key) {
+
         Order order = new Order(id, 3);
+
         Invoice invoiceItem = restTemplate.postForObject(key + "/order", order, Invoice.class);
         log.info("quant" + invoiceItem.getCount());
         double returned = invoiceService.processInvoice(invoiceItem);
@@ -161,6 +176,7 @@ public class InventoryService {
         log.info("invoiceid= " + invoiceItem.getInvoiceId() );
         return new Payment(new BigDecimal(returned).setScale(2,BigDecimal.ROUND_DOWN),
                 invoiceItem.getInvoiceId());
+
 
     }
 

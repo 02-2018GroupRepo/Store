@@ -4,6 +4,7 @@ import bootcamp.model.invoice.Invoice;
 import bootcamp.model.invoice.InvoiceItem;
 import bootcamp.model.products.Product;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -22,6 +23,7 @@ public class InvoiceService {
     @Autowired
     Map<Integer, Integer> inv;
 
+
     @Autowired
     @Qualifier("Stock")
     double stock;
@@ -33,13 +35,14 @@ public class InvoiceService {
         double statement = price.doubleValue() * invoiceItem.getCount();
 
         updateInventory(invoiceItem.getProduct().getId(), price, invoiceItem.getCount());
+
         //TODO: update store revenue
         
         return statement;
+
     }
 
     private void updateInventory(int id, BigDecimal price, int count) {
-
         for (int i = 1; i <= 60; i++) {
             if (i == id) {
                 Product p = products.get(i-1);
