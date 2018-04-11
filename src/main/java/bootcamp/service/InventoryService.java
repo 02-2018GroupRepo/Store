@@ -7,6 +7,8 @@ import java.util.concurrent.CompletableFuture;
 
 import bootcamp.model.inventory.Inventory;
 import bootcamp.model.inventory.InventoryItem;
+import bootcamp.model.invoice.InvoiceItem;
+import bootcamp.model.order.Order;
 import com.sun.xml.internal.ws.util.CompletedFuture;
 import groovy.util.MapEntry;
 import org.slf4j.Logger;
@@ -24,22 +26,24 @@ import org.springframework.web.client.RestTemplate;
 public class InventoryService {
 
     private RestTemplate restTemplate = new RestTemplate();
+    @Autowired
+    private InvoiceService invoiceService;
 
     @Value("${supplier-a.url}")
     private String vendor1;
 
     @Value("${supplier-b.url}")
-    private  String vendor2;
+    private String vendor2;
 
     @Value("${supplier-c.url}")
-    private  String vendor3;
+    private String vendor3;
 
     @Autowired
     private List<Product> inventoryList;
     private static final Logger log = LoggerFactory.getLogger(InventoryService.class);
 
     @Autowired
-    private  Map<Integer, Integer> inv;
+    private Map<Integer, Integer> inv;
 
     @Autowired
     private SimpleDateFormat dateFormat;
@@ -118,12 +122,14 @@ public class InventoryService {
 
         }
 
-        sendOrder(lowest.getKey());
+        sendOrder(id, lowest.getKey());
     }
 
     @Async
-    private void sendOrder(String key) {
+    private void sendOrder(int id, String key) {
 
+        Order order = new Order(id, 3);
+        InvoiceItem invoiceItem = restTemplate.postForObject(key, order, InvoiceItem.class);
 
     }
 

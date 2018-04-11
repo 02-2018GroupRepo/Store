@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Inventory {
-//list of inventoryItems
-    List<Inventory> inventories = new ArrayList<>();
+
+private   List<Inventory> inventories = new ArrayList<>();
 
     public List<Inventory> getInventories() {
         return inventories;
