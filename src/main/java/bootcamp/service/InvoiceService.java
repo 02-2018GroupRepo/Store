@@ -35,8 +35,10 @@ public class InvoiceService {
 
         for(int i = 1 ; i <= products.size(); i++){
             if(products.get(i-1).getId()==id){
-                products.get(i-1).setRetail_price(price.multiply(new BigDecimal(1.5)));
-                products.get(i-1).setWholesale_price(price);
+               Product p = products.get(i-1);
+                p.setWholesale_price(price);
+                p.setRetail_price(price.multiply(new BigDecimal(1.5)));
+                products.set(i-1,p);
                 int currentInv = inv.get(id);
                 inv.put(id,currentInv+count);
             }

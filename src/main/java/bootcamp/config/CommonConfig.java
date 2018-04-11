@@ -39,6 +39,7 @@ public class CommonConfig {
 		return inv;
 	}
 
+
 	@Bean
 	public RestTemplate getRestTemplate() {
 		return new RestTemplate();
