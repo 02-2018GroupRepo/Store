@@ -1,15 +1,16 @@
 package bootcamp.service;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import bootcamp.model.inventory.Inventory;
 import bootcamp.model.inventory.InventoryItem;
+import bootcamp.model.invoice.InvoiceItem;
+import bootcamp.model.order.Order;
 import com.sun.xml.internal.ws.util.CompletedFuture;
+import groovy.util.MapEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,22 +26,24 @@ import org.springframework.web.client.RestTemplate;
 public class InventoryService {
 
     private RestTemplate restTemplate = new RestTemplate();
+    @Autowired
+    private InvoiceService invoiceService;
 
     @Value("${supplier-a.url}")
-    String vendor1;
+    private String vendor1;
 
     @Value("${supplier-b.url}")
-    String vendor2;
+    private String vendor2;
 
     @Value("${supplier-c.url}")
-    String vendor3;
+    private String vendor3;
 
     @Autowired
     private List<Product> inventoryList;
     private static final Logger log = LoggerFactory.getLogger(InventoryService.class);
 
     @Autowired
-    Map<Integer, Integer> inv;
+    private Map<Integer, Integer> inv;
 
     @Autowired
     private SimpleDateFormat dateFormat;
@@ -72,50 +75,69 @@ public class InventoryService {
         CompletableFuture<InventoryItem> callVendor1;
         CompletableFuture<InventoryItem> callVendor2;
         CompletableFuture<InventoryItem> callVendor3;
-        ArrayList<InventoryItem> futures = new ArrayList<>();
+        Map<String, BigDecimal> futures = new HashMap();
 
         try {
-            callVendor1 = getInventoryItem(vendor1,id);
-            futures.add(callVendor1.get());
+            callVendor1 = getInventoryItem(vendor1, id);
+            if (callVendor1.get() != null && callVendor1.get().getNumber_available() >= 3)
+                futures.put(vendor1, callVendor1.get().getRetail_price());
         } catch (Exception e) {
+            callVendor1 = null;
             log.info("Vendor 1 failed");
         }
         try {
-            callVendor2 = getInventoryItem(vendor1, id);
-            futures.add( callVendor2.get());
+            callVendor2 = getInventoryItem(vendor2, id);
+            if (callVendor2.get() != null && callVendor2.get().getNumber_available() >= 3)
+
+                futures.put(vendor2, callVendor2.get().getRetail_price());
 
         } catch (Exception e) {
+            callVendor2 = null;
+
             log.info("Vendor 2 failed");
 
         }
         try {
-            callVendor3 = getInventoryItem(vendor1, id);
-            futures.add(callVendor3.get());
+            callVendor3 = getInventoryItem(vendor3, id);
+            if (callVendor3.get() != null && callVendor3.get().getNumber_available() >= 3)
+
+                futures.put(vendor3, callVendor3.get().getRetail_price());
 
         } catch (Exception e) {
+            callVendor3 = null;
+
             log.info("Vendor 3 failed");
 
 
         }
 
- //       CompletableFuture.allOf(callVendor1, callVendor2, callVendor3).join();
 
-//        for (Map.Entry<Integer, Integer> m : inv.entrySet()) {
-//            if (m.getValue() < 2)
-//                for (List l : futures) {
-//                    for(InventoryItem ii : futures)
-//                }
-//        }
+        CompletableFuture.allOf(callVendor1, callVendor2, callVendor3).join();
+        if (futures.isEmpty())
+            return;
 
+        Map.Entry<String, BigDecimal> lowest = new MapEntry("", 0);
+        for (Map.Entry<String, BigDecimal> future : futures.entrySet()) {
+            lowest =
+                    lowest.getValue().doubleValue() > future.getValue().doubleValue() ? lowest : future;
 
+        }
 
+        sendOrder(id, lowest.getKey());
+    }
+
+    @Async
+    private void sendOrder(int id, String key) {
+
+        Order order = new Order(id, 3);
+        InvoiceItem invoiceItem = restTemplate.postForObject(key, order, InvoiceItem.class);
 
     }
 
     @Async
     private CompletableFuture<InventoryItem> getInventoryItem(String vendorUrl, int id) throws InterruptedException {
         log.info("getting a product");
-        String getById = vendorUrl + "/inventory/"+id;
+        String getById = vendorUrl + "/inventory/" + id;
         InventoryItem results = restTemplate.getForObject(getById, InventoryItem.class);
 
 
