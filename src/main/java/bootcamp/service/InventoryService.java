@@ -98,14 +98,14 @@ public class InventoryService {
 
         }
 
-        CompletableFuture.allOf(callVendor1, callVendor2, callVendor3).join();
+ //       CompletableFuture.allOf(callVendor1, callVendor2, callVendor3).join();
 
-        for (Map.Entry<Integer, Integer> m : inv.entrySet()) {
-            if (m.getValue() < 2)
-                for (List l : futures) {
-                    for(InventoryItem ii : futures)
-                }
-        }
+//        for (Map.Entry<Integer, Integer> m : inv.entrySet()) {
+//            if (m.getValue() < 2)
+//                for (List l : futures) {
+//                    for(InventoryItem ii : futures)
+//                }
+//        }
 
 
 

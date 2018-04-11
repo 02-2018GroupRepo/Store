@@ -4,6 +4,22 @@ import org.springframework.stereotype.Component;
 
 @Component
  public class Store {
-    String name;
-    double revenue = 5750.00;
+    private String name;
+    private Double revenue = 5750.00;
+
+    public String getName() {
+        return name;
+    }
+
+    public double getRevenue() {
+        return revenue;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setRevenue(double revenue) {
+        this.revenue = revenue;
+    }
 }
