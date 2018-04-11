@@ -5,9 +5,14 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
+import bootcamp.Payment;
 import bootcamp.model.inventory.Inventory;
 import bootcamp.model.inventory.InventoryItem;
+
 import bootcamp.model.invoice.InvoiceItem;
+
+import bootcamp.model.invoice.Invoice;
+
 import bootcamp.model.order.Order;
 import com.sun.xml.internal.ws.util.CompletedFuture;
 import groovy.util.MapEntry;
@@ -25,11 +30,15 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class InventoryService {
 
-    private RestTemplate restTemplate = new RestTemplate();
+
+    @Autowired
+    private RestTemplate restTemplate;
     @Autowired
     private InvoiceService invoiceService;
 
-    @Value("${supplier-a.url}")
+
+    @Value("${vendor-a.url}")
+
     private String vendor1;
 
     @Value("${supplier-b.url}")
@@ -65,8 +74,11 @@ public class InventoryService {
 
     private void checkInventory() {
         for (Map.Entry<Integer, Integer> m : inv.entrySet()) {
-            if (m.getValue() < 2)
+            if (m.getValue() < 2) {
+                //log.info("Checking Vendors for Product ID:" + m.getKey());
+
                 sendCalls(m.getKey());
+            }
         }
     }
 
@@ -77,24 +89,34 @@ public class InventoryService {
         CompletableFuture<InventoryItem> callVendor3;
         Map<String, BigDecimal> futures = new HashMap();
 
+
+
         try {
+            log.info("before size " + futures.size());
             callVendor1 = getInventoryItem(vendor1, id);
-            if (callVendor1.get() != null && callVendor1.get().getNumber_available() >= 3)
+            if (callVendor1.get() != null && callVendor1.get().getNumber_available() >= 3){
+                log.info("inv = "+ callVendor1.get().getNumber_available());
                 futures.put(vendor1, callVendor1.get().getRetail_price());
+
+            }
+
         } catch (Exception e) {
-            callVendor1 = null;
+            callVendor1 = new CompletableFuture<>();
+
             log.info("Vendor 1 failed");
         }
-        try {
+/*        try {
+
             callVendor2 = getInventoryItem(vendor2, id);
             if (callVendor2.get() != null && callVendor2.get().getNumber_available() >= 3)
 
                 futures.put(vendor2, callVendor2.get().getRetail_price());
 
         } catch (Exception e) {
-            callVendor2 = null;
 
-            log.info("Vendor 2 failed");
+            callVendor2 = new CompletableFuture<>();
+
+           // log.info("Vendor 2 failed");
 
         }
         try {
@@ -104,12 +126,12 @@ public class InventoryService {
                 futures.put(vendor3, callVendor3.get().getRetail_price());
 
         } catch (Exception e) {
-            callVendor3 = null;
 
-            log.info("Vendor 3 failed");
+            callVendor3 = new CompletableFuture<>();
+
+            //log.info("Vendor 3 failed");
 
 
-        }
 
 
         CompletableFuture.allOf(callVendor1, callVendor2, callVendor3).join();
@@ -123,6 +145,22 @@ public class InventoryService {
 
         }
 
+
+        log.info("about to send order");
+        Payment payment = sendOrderAndReturnPayment(id, lowest.getKey());
+        log.info("payment created and about to send");
+        Boolean response = restTemplate.postForObject(lowest.getKey() + "/payment", payment, Boolean.class);
+        log.info("payment sent" + response);
+        if (response)
+            log.info(lowest.getKey() + " Paid us");
+    }
+
+    //@Async
+    private Payment sendOrderAndReturnPayment(int id, String key) {
+
+
+        }
+
         sendOrder(id, lowest.getKey());
     }
 
@@ -130,20 +168,23 @@ public class InventoryService {
     private void sendOrder(int id, String key) {
 
         Order order = new Order(id, 3);
-        InvoiceItem invoiceItem = restTemplate.postForObject(key, order, InvoiceItem.class);
+
+        Invoice invoiceItem = restTemplate.postForObject(key + "/order", order, Invoice.class);
+        log.info("quant" + invoiceItem.getCount());
+        double returned = invoiceService.processInvoice(invoiceItem);
+        //Payment payment = new Payment();
+        log.info("invoiceid= " + invoiceItem.getInvoiceId() );
+        return new Payment(new BigDecimal(returned).setScale(2,BigDecimal.ROUND_DOWN),
+                invoiceItem.getInvoiceId());
+
 
     }
 
     @Async
-    private CompletableFuture<InventoryItem> getInventoryItem(String vendorUrl, int id) throws InterruptedException {
-        log.info("getting a product");
+    private CompletableFuture<InventoryItem> getInventoryItem(String vendorUrl, int id) throws Exception {
         String getById = vendorUrl + "/inventory/" + id;
         InventoryItem results = restTemplate.getForObject(getById, InventoryItem.class);
 
-
-        // Artificial delay of 1s for demonstration purposes
-        Thread.sleep(1000L);
         return CompletableFuture.completedFuture(results);
     }
-
 }

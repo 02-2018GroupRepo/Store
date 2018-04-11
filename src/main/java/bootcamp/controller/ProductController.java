@@ -18,12 +18,15 @@ public class ProductController {
 	@Autowired
 	private ProductService productService;
 
+    @Autowired
+    private List<Product> inventoryList;
+
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@RequestMapping("/product/{id}")
     public Product getProductById(@PathVariable Integer id) {
 		log.debug("Retreiving product " + id);
-    	return productService.getProductById(id); 
+    	return inventoryList.get(id-1);
     }
 
 	@RequestMapping(value ="/test", produces = {MediaType.APPLICATION_JSON_VALUE, "application/hal+json"})
@@ -34,7 +37,7 @@ public class ProductController {
 
 	@RequestMapping("/product")
 	public List<Product> getProductList(){
-		return productService.getProducts();
+		return inventoryList;
 	}
 	
 }

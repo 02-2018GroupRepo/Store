@@ -1,9 +1,9 @@
 package bootcamp.model.order;
 
 public class Order {
-//prod id, quantity
     private int id;
     private int quantity;
+
 
     public Order() {
     }
@@ -15,14 +15,14 @@ public class Order {
 
     public int getId() {
         return id;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
 
     public void setId(int id) {
         this.id = id;
+    }
+
+
+    public int getQuantity() {
+        return quantity;
     }
 
     public void setQuantity(int quantity) {
@@ -30,3 +30,4 @@ public class Order {
     }
 
 }
+
