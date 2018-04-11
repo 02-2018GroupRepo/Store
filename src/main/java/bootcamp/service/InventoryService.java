@@ -144,6 +144,8 @@ public class InventoryService {
         Order order = new Order(id, 3);
         Invoice invoiceItem = restTemplate.postForObject(key, order, Invoice.class);
         double returned = invoiceService.processInvoice(invoiceItem);
+        //Payment payment = new Payment();
+
         return new Payment(new BigDecimal(returned),invoiceItem.getInvoiceId());
 
     }

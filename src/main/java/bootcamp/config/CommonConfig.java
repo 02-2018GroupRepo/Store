@@ -8,6 +8,7 @@ import org.springframework.web.client.RestTemplate;
 
 import bootcamp.model.products.Product;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,50 +27,52 @@ public class CommonConfig {
     private final String GET_PRODUCTS = "SELECT id, name, description, retail_price, wholesale_price FROM product";
 
     @Qualifier("dataSource")
-	@Autowired
-	DataSource dataSource;
+    @Autowired
+    DataSource dataSource;
 
-	@Bean
+    @Bean
     @Qualifier("inventory")
-	Map<Integer, Integer> getInventory(){
-		Map<Integer,Integer> inv = new HashMap<>();
-		for (int i =1; i  <= 60;i++){
-			inv.put(i,0);
-		}
-		return inv;
-	}
-
-
-
-	@Bean
-    @Qualifier("Stock")
-    double getStock(){
-	    return 47.50;
+    Map<Integer, Integer> getInventory() {
+        Map<Integer, Integer> inv = new HashMap<>();
+        for (int i = 1; i <= 60; i++) {
+            inv.put(i, 0);
+        }
+        return inv;
     }
 
-	@Bean
-	public RestTemplate getRestTemplate() {
-		return new RestTemplate();
-	}
-	
-	@Bean
-	public JdbcTemplate getJdbcTemplate() {
-		return new JdbcTemplate(dataSource);
-	}
-	
-	@Bean
-	public SimpleDateFormat getSimpleDateFormat() {
-		return new SimpleDateFormat("HH:mm:ss");
-	}
-	
-	@Bean List<Product> getProductList(){
-	    JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-		return jdbcTemplate.query(GET_PRODUCTS, new BeanPropertyRowMapper<>(Product.class));
-	}
-	
-	@Bean
-	public static PropertySourcesPlaceholderConfigurer propertyConfig() {
-		return new PropertySourcesPlaceholderConfigurer();
-	}
+
+
+
+    @Bean
+    @Qualifier("Stock")
+    double getStock() {
+        return 47.50;
+    }
+
+    @Bean
+    public RestTemplate getRestTemplate() {
+        return new RestTemplate();
+    }
+
+    @Bean
+    public JdbcTemplate getJdbcTemplate() {
+        return new JdbcTemplate(dataSource);
+    }
+
+    @Bean
+    public SimpleDateFormat getSimpleDateFormat() {
+        return new SimpleDateFormat("HH:mm:ss");
+    }
+
+    @Bean
+    List<Product> getProductList() {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        return jdbcTemplate.query(GET_PRODUCTS, new BeanPropertyRowMapper<>(Product.class));
+    }
+
+    @Bean
+    public static PropertySourcesPlaceholderConfigurer propertyConfig() {
+        return new PropertySourcesPlaceholderConfigurer();
+    }
 
 }

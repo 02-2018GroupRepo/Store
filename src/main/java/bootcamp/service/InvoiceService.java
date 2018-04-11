@@ -40,15 +40,13 @@ public class InvoiceService {
 
     private void updateInventory(int id, BigDecimal price, int count) {
 
-        for (int i = 1; i <= products.size(); i++) {
-            if (products.get(i - 1).getId() == id) {
+        for (int i = 1; i <= 60; i++) {
+            if (i == id) {
                 Product p = products.get(i-1);
                 p.setWholesale_price(price);
 
-                p.setRetail_price(price.multiply(new BigDecimal(
-                        price.doubleValue() + price.doubleValue() * stock / 100)));
+                p.setRetail_price(price.add(price.multiply(new BigDecimal(stock/100))).setScale(2,BigDecimal.ROUND_UP));
                 products.set(i-1,p);
-
 
                 int currentInv = inv.get(id);
                 inv.put(id, currentInv + count);
