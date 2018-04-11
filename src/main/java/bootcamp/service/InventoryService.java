@@ -5,9 +5,10 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
+import bootcamp.Payment;
 import bootcamp.model.inventory.Inventory;
 import bootcamp.model.inventory.InventoryItem;
-import bootcamp.model.invoice.InvoiceItem;
+import bootcamp.model.invoice.Invoice;
 import bootcamp.model.order.Order;
 import com.sun.xml.internal.ws.util.CompletedFuture;
 import groovy.util.MapEntry;
@@ -25,9 +26,11 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class InventoryService {
 
-    private RestTemplate restTemplate = new RestTemplate();
+    @Autowired
+    private RestTemplate restTemplate;
     @Autowired
     private InvoiceService invoiceService;
+
 
     @Value("${supplier-a.url}")
     private String vendor1;
@@ -122,14 +125,21 @@ public class InventoryService {
 
         }
 
-        sendOrder(id, lowest.getKey());
+        Payment payment = sendOrderAndReturnPayment(id, lowest.getKey());
+        Boolean response = restTemplate.postForObject(lowest.getKey(),payment,Boolean.class);
+
+        if(response)
+            log.info(lowest.getKey()+ " Paid us");
     }
 
     @Async
-    private void sendOrder(int id, String key) {
+    private Payment sendOrderAndReturnPayment(int id, String key) {
+
 
         Order order = new Order(id, 3);
-        InvoiceItem invoiceItem = restTemplate.postForObject(key, order, InvoiceItem.class);
+        Invoice invoiceItem = restTemplate.postForObject(key, order, Invoice.class);
+        double returned = invoiceService.processInvoice(invoiceItem);
+        return new Payment(new BigDecimal(returned),invoiceItem.getInvoiceId());
 
     }
 
@@ -139,10 +149,8 @@ public class InventoryService {
         String getById = vendorUrl + "/inventory/" + id;
         InventoryItem results = restTemplate.getForObject(getById, InventoryItem.class);
 
-
         // Artificial delay of 1s for demonstration purposes
         Thread.sleep(1000L);
         return CompletableFuture.completedFuture(results);
     }
-
 }
