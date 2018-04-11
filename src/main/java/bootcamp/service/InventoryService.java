@@ -32,7 +32,7 @@ public class InventoryService {
     private InvoiceService invoiceService;
 
 
-    @Value("${supplier-a.url}")
+    @Value("${vendor-a.url}")
     private String vendor1;
 
     @Value("${supplier-b.url}")
@@ -69,7 +69,7 @@ public class InventoryService {
     private void checkInventory() {
         for (Map.Entry<Integer, Integer> m : inv.entrySet()) {
             if (m.getValue() < 2) {
-                log.info("Checking Vendors for Product ID:" + m.getKey());
+                //log.info("Checking Vendors for Product ID:" + m.getKey());
 
                 sendCalls(m.getKey());
             }
@@ -83,16 +83,22 @@ public class InventoryService {
         CompletableFuture<InventoryItem> callVendor3;
         Map<String, BigDecimal> futures = new HashMap();
 
+
         try {
+            log.info("before size " + futures.size());
             callVendor1 = getInventoryItem(vendor1, id);
-            if (callVendor1.get() != null && callVendor1.get().getNumber_available() >= 3)
+            if (callVendor1.get() != null && callVendor1.get().getNumber_available() >= 3){
+                log.info("inv = "+ callVendor1.get().getNumber_available());
                 futures.put(vendor1, callVendor1.get().getRetail_price());
+
+            }
+
         } catch (Exception e) {
             callVendor1 = new CompletableFuture<>();
 
             log.info("Vendor 1 failed");
         }
-        try {
+/*        try {
             callVendor2 = getInventoryItem(vendor2, id);
             if (callVendor2.get() != null && callVendor2.get().getNumber_available() >= 3)
 
@@ -101,7 +107,7 @@ public class InventoryService {
         } catch (Exception e) {
             callVendor2 = new CompletableFuture<>();
 
-            log.info("Vendor 2 failed");
+           // log.info("Vendor 2 failed");
 
         }
         try {
@@ -113,40 +119,46 @@ public class InventoryService {
         } catch (Exception e) {
             callVendor3 = new CompletableFuture<>();
 
-            log.info("Vendor 3 failed");
+            //log.info("Vendor 3 failed");
 
 
-        }
+        }*/
 
-       // CompletableFuture.allOf(callVendor1, callVendor2, callVendor3).join();
+        // CompletableFuture.allOf(callVendor1, callVendor2, callVendor3).join();
         if (futures.isEmpty()) {
-         log.info("no stores are open");
+            log.info("no stores has product " + id);
             return;
         }
-        Map.Entry<String, BigDecimal> lowest = new MapEntry("", 0);
+        else
+            log.info(futures.size() + " afterwards");
+        Map.Entry<String, BigDecimal> lowest = new MapEntry("", new BigDecimal(1000));
         for (Map.Entry<String, BigDecimal> future : futures.entrySet()) {
             lowest =
-                    lowest.getValue().doubleValue() > future.getValue().doubleValue() ? lowest : future;
+                    lowest.getValue().doubleValue() < future.getValue().doubleValue() ? lowest : future;
 
         }
 
+        log.info("about to send order");
         Payment payment = sendOrderAndReturnPayment(id, lowest.getKey());
-        Boolean response = restTemplate.postForObject(lowest.getKey(),payment,Boolean.class);
-
-        if(response)
-            log.info(lowest.getKey()+ " Paid us");
+        log.info("payment created and about to send");
+        Boolean response = restTemplate.postForObject(lowest.getKey() + "/payment", payment, Boolean.class);
+        log.info("payment sent" + response);
+        if (response)
+            log.info(lowest.getKey() + " Paid us");
     }
 
-    @Async
+    //@Async
     private Payment sendOrderAndReturnPayment(int id, String key) {
 
 
         Order order = new Order(id, 3);
-        Invoice invoiceItem = restTemplate.postForObject(key, order, Invoice.class);
+        Invoice invoiceItem = restTemplate.postForObject(key + "/order", order, Invoice.class);
+        log.info("quant" + invoiceItem.getCount());
         double returned = invoiceService.processInvoice(invoiceItem);
         //Payment payment = new Payment();
-
-        return new Payment(new BigDecimal(returned),invoiceItem.getInvoiceId());
+        log.info("invoiceid= " + invoiceItem.getInvoiceId() );
+        return new Payment(new BigDecimal(returned).setScale(2,BigDecimal.ROUND_DOWN),
+                invoiceItem.getInvoiceId());
 
     }
 
