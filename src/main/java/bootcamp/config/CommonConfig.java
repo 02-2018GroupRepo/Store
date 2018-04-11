@@ -33,8 +33,8 @@ public class CommonConfig {
     @Qualifier("inventory")
 	Map<Integer, Integer> getInventory(){
 		Map<Integer,Integer> inv = new HashMap<>();
-		for (int i =0; i  < 60;i++){
-			inv.put(i+1,0);
+		for (int i =1; i  <= 60;i++){
+			inv.put(i,0);
 		}
 		return inv;
 	}
