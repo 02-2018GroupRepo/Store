@@ -17,6 +17,7 @@ public class Order {
         this.id = id;
     }
 
+
     public int getQuantity() {
         return quantity;
     }
@@ -25,3 +26,4 @@ public class Order {
         this.quantity = quantity;
     }
 }
+

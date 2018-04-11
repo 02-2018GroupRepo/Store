@@ -122,6 +122,7 @@ public class InventoryService {
             //log.info("Vendor 3 failed");
 
 
+<<<<<<< HEAD
         }*/
 
         // CompletableFuture.allOf(callVendor1, callVendor2, callVendor3).join();
@@ -137,6 +138,7 @@ public class InventoryService {
                     lowest.getValue().doubleValue() < future.getValue().doubleValue() ? lowest : future;
 
         }
+
 
         log.info("about to send order");
         Payment payment = sendOrderAndReturnPayment(id, lowest.getKey());
