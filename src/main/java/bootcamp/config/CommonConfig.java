@@ -40,6 +40,13 @@ public class CommonConfig {
 	}
 
 
+
+	@Bean
+    @Qualifier("Stock")
+    double getStock(){
+	    return 47.50;
+    }
+
 	@Bean
 	public RestTemplate getRestTemplate() {
 		return new RestTemplate();
