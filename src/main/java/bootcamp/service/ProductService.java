@@ -45,10 +45,10 @@ public class ProductService {
 		return dao.getProducts();
 	}
 	
-	@Scheduled(cron = "${product.status.schedule}")
+/*	@Scheduled(cron = "${product.status.schedule}")
     public void productStatus() {
         log.info("Checking on product status at {}", dateFormat.format(new Date()));
         log.debug("Debug goes here");
-    }
+    }*/
 
 }

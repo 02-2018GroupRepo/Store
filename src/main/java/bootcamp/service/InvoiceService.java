@@ -1,5 +1,6 @@
 package bootcamp.service;
 
+import bootcamp.Store;
 import bootcamp.model.invoice.Invoice;
 import bootcamp.model.invoice.InvoiceItem;
 import bootcamp.model.products.Product;
@@ -23,6 +24,8 @@ public class InvoiceService {
     @Autowired
     Map<Integer, Integer> inv;
 
+    @Autowired
+    Store store;
 
     @Autowired
     @Qualifier("Stock")
@@ -36,8 +39,7 @@ public class InvoiceService {
 
         updateInventory(invoiceItem.getProduct().getId(), price, invoiceItem.getCount());
 
-        //TODO: update store revenue
-        
+        store.reduceRevenue(price.doubleValue());
         return statement;
 
     }

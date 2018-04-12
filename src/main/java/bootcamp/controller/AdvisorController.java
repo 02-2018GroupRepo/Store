@@ -11,11 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AdvisorController {
 
+//    Logger logger
     @Autowired
     private CompanyService companyService;
 
-    //@Qualifier("Advisory")
     @RequestMapping(value = "/company", produces = {MediaType.APPLICATION_JSON_VALUE, "application/hal+json"})
+
     public Double[] getStoreValue(){
        return companyService.getCompanyValue();
     }

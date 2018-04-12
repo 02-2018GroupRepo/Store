@@ -3,7 +3,7 @@ package bootcamp;
 import org.springframework.stereotype.Component;
 
 @Component
- public class Store {
+public class Store {
     private String name;
     private Double revenue = 5750.00;
 
@@ -21,5 +21,13 @@ import org.springframework.stereotype.Component;
 
     public void setRevenue(double revenue) {
         this.revenue = revenue;
+    }
+
+    public void addRevenue(double amount) {
+        revenue += amount;
+    }
+
+    public void reduceRevenue(double amount) {
+        revenue -= amount;
     }
 }

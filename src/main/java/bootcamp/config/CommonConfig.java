@@ -10,10 +10,7 @@ import bootcamp.model.products.Product;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.sql.DataSource;
 
@@ -33,7 +30,7 @@ public class CommonConfig {
     @Bean
     @Qualifier("inventory")
     Map<Integer, Integer> getInventory() {
-        Map<Integer, Integer> inv = new HashMap<>();
+        Map<Integer, Integer> inv = new Hashtable<>();
         for (int i = 1; i <= 60; i++) {
             inv.put(i, 0);
         }
