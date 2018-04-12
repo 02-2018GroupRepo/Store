@@ -4,6 +4,8 @@ import bootcamp.Store;
 import bootcamp.model.order.Order;
 import bootcamp.model.products.Product;
 import org.codehaus.groovy.runtime.powerassert.SourceText;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -29,6 +31,7 @@ public class CustomerService {
     @Autowired
     private List<Product> getProductList;
 
+    Logger log = LoggerFactory.getLogger(this.getClass());
 
     public boolean receiveOrderFromCustomer(Order order) {
 
@@ -42,20 +45,20 @@ public class CustomerService {
                     // add payment to revenue
                     double payment = order.getQuantity() * Double.parseDouble("" + item.getRetail_price());
                     store.addRevenue(payment);
-                   // store.setRevenue(store.getRevenue() + payment);
+                    // store.setRevenue(store.getRevenue() + payment);
                     System.out.println(store.getRevenue());
 
                     // substract amount from inventory
                     int currProductQty = inv.get(order.getId());
                     inv.put(order.getId(), currProductQty - order.getQuantity());
-                    System.out.println("item id: " + order.getId() + " new qty: " + inv.get(order.getId()));
+                    log.info("item id: " + order.getId() + " new qty: " + inv.get(order.getId()));
 
                     return true;
                 }
             }
         }
 
-        System.out.println("Could not process order: " + order.getId());
+        log.info("Could not process order for product: " + order.getId());
         return false;
     }
 

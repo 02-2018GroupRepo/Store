@@ -39,8 +39,7 @@ public class InventoryController {
 
 	@RequestMapping(value = "inventory/purchase", method=RequestMethod.POST)
 	public void getPurchase(@RequestBody Order order){
-		System.out.println("----------HELLO there_______-");
-		log.debug("Purchasing an item");
+		log.info("Customer purchasing an item");
 		customerService.receiveOrderFromCustomer(order);
 	}
 	

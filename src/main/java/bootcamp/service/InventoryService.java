@@ -75,7 +75,6 @@ public class InventoryService {
     private void checkInventory() {
         for (Map.Entry<Integer, Integer> m : inv.entrySet()) {
             if (m.getValue() < 4) {
-                //log.info("Checking Vendors for Product ID:" + m.getKey());
 
                 sendCalls(m.getKey());
             }
@@ -92,10 +91,8 @@ public class InventoryService {
 
 
         try {
-         //   log.info("before size " + futures.size());
             callVendor1 = getInventoryItem(vendor1, id);
-            if (callVendor1.get() != null && callVendor1.get().getNumber_available() >= 3){
-             //   log.info("inv = "+ callVendor1.get().getNumber_available());
+            if (callVendor1.get() != null && callVendor1.get().getNumber_available() >= 5){
                 futures.put(vendor1, callVendor1.get().getRetail_price());
 
             }
@@ -103,39 +100,22 @@ public class InventoryService {
         } catch (Exception e) {
             callVendor1 = new CompletableFuture<>();
 
-         //   log.info("Vendor 1 failed");
         }
-/*        try {
-
+        /*        try {
             callVendor2 = getInventoryItem(vendor2, id);
             if (callVendor2.get() != null && callVendor2.get().getNumber_available() >= 3)
-
                 futures.put(vendor2, callVendor2.get().getRetail_price());
-
         } catch (Exception e) {
-
             callVendor2 = new CompletableFuture<>();
-
-           // log.info("Vendor 2 failed");
-
         }
         try {
             callVendor3 = getInventoryItem(vendor3, id);
             if (callVendor3.get() != null && callVendor3.get().getNumber_available() >= 3)
-
                 futures.put(vendor3, callVendor3.get().getRetail_price());
-
         } catch (Exception e) {
-
             callVendor3 = new CompletableFuture<>();
+*/
 
-            //log.info("Vendor 3 failed");
-
-
-
-
-        CompletableFuture.allOf(callVendor1, callVendor2, callVendor3).join();
-        */
         if (futures.isEmpty())
             return;
 
@@ -147,11 +127,8 @@ public class InventoryService {
         }
 
 
-     //   log.info("about to send order");
         Payment payment = sendOrderAndReturnPayment(id, lowest.getKey());
-       // log.info("payment created and about to send");
         Boolean response = restTemplate.postForObject(lowest.getKey() + "/payment", payment, Boolean.class);
-        //log.info("payment sent" + response);
         if (response)
             log.info(lowest.getKey() + " Were paid for Product id " + id);
     }
@@ -162,10 +139,8 @@ public class InventoryService {
         Order order = new Order(id, 5);
 
         Invoice invoiceItem = restTemplate.postForObject(key + "/order", order, Invoice.class);
-      //  log.info("quant" + invoiceItem.getCount());
         double returned = invoiceService.processInvoice(invoiceItem);
-        //Payment payment = new Payment();
-       // log.info("invoiceid= " + invoiceItem.getInvoiceId() );
+
         return new Payment(new BigDecimal(returned).setScale(2,BigDecimal.ROUND_DOWN),
                 invoiceItem.getInvoiceId());
 
