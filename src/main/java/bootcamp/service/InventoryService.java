@@ -1,16 +1,10 @@
 package bootcamp.service;
 
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
-
 import bootcamp.Payment;
-import bootcamp.model.inventory.Inventory;
 import bootcamp.model.inventory.InventoryItem;
 import bootcamp.model.invoice.Invoice;
 import bootcamp.model.order.Order;
-import com.sun.xml.internal.ws.util.CompletedFuture;
+import bootcamp.model.products.Product;
 import groovy.util.MapEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,9 +13,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import bootcamp.model.products.Product;
 import org.springframework.web.client.RestTemplate;
+
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @Component
 public class InventoryService {
@@ -87,8 +87,8 @@ public class InventoryService {
         try {
             log.info("before size " + futures.size());
             callVendor1 = getInventoryItem(vendor1, id);
-            if (callVendor1.get() != null && callVendor1.get().getNumber_available() >= 3){
-                log.info("inv = "+ callVendor1.get().getNumber_available());
+            if (callVendor1.get() != null && callVendor1.get().getNumber_available() >= 3) {
+                log.info("inv = " + callVendor1.get().getNumber_available());
                 futures.put(vendor1, callVendor1.get().getRetail_price());
 
             }
@@ -128,8 +128,7 @@ public class InventoryService {
         if (futures.isEmpty()) {
             log.info("no stores has product " + id);
             return;
-        }
-        else
+        } else
             log.info(futures.size() + " afterwards");
         Map.Entry<String, BigDecimal> lowest = new MapEntry("", new BigDecimal(1000));
         for (Map.Entry<String, BigDecimal> future : futures.entrySet()) {
@@ -156,8 +155,8 @@ public class InventoryService {
         log.info("quant" + invoiceItem.getCount());
         double returned = invoiceService.processInvoice(invoiceItem);
         //Payment payment = new Payment();
-        log.info("invoiceid= " + invoiceItem.getInvoiceId() );
-        return new Payment(new BigDecimal(returned).setScale(2,BigDecimal.ROUND_DOWN),
+        log.info("invoiceid= " + invoiceItem.getInvoiceId());
+        return new Payment(new BigDecimal(returned).setScale(2, BigDecimal.ROUND_DOWN),
                 invoiceItem.getInvoiceId());
 
     }

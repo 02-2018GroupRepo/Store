@@ -8,7 +8,10 @@ import java.math.BigDecimal;
 public class Payment {
     private BigDecimal paymentForProduct;
     private int invoiceId;
-Payment(){}
+
+    Payment() {
+    }
+
     public Payment(BigDecimal paymentForProduct, int invoiceId) {
         this.paymentForProduct = paymentForProduct;
         this.invoiceId = invoiceId;

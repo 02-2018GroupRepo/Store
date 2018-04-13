@@ -1,26 +1,20 @@
 package bootcamp.config;
 
-import bootcamp.dao.ProductDao;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.web.client.RestTemplate;
-
 import bootcamp.model.products.Product;
-
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.web.client.RestTemplate;
+
+import javax.sql.DataSource;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Configuration
 public class CommonConfig {
@@ -39,9 +33,6 @@ public class CommonConfig {
         }
         return inv;
     }
-
-
-
 
     @Bean
     @Qualifier("Stock")
