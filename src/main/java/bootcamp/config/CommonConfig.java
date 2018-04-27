@@ -2,6 +2,7 @@ package bootcamp.config;
 
 import bootcamp.dao.ProductDao;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.web.client.RestTemplate;
@@ -44,6 +45,13 @@ public class CommonConfig {
     @Qualifier("Stock")
     double getStock() {
         return 47.50;
+    }
+
+
+    @Bean
+    @Primary
+    double getPrice(){
+        return 75;
     }
 
     @Bean

@@ -30,6 +30,8 @@ public class InvoiceService {
     @Autowired
     @Qualifier("Stock")
     double stock;
+
+
     @Autowired
     RestTemplate restTemplate;
 
@@ -47,11 +49,11 @@ public class InvoiceService {
     private void updateInventory(int id, BigDecimal price, int count) {
         for (int i = 1; i <= 60; i++) {
             if (i == id) {
-                Product p = products.get(i-1);
+                Product p = products.get(i - 1);
                 p.setWholesale_price(price);
 
-                p.setRetail_price(price.add(price.multiply(new BigDecimal(stock/100))).setScale(2,BigDecimal.ROUND_UP));
-                products.set(i-1,p);
+                p.setRetail_price(price.add(price.multiply(new BigDecimal(stock / 100))).setScale(2, BigDecimal.ROUND_UP));
+                products.set(i - 1, p);
 
                 int currentInv = inv.get(id);
                 inv.put(id, currentInv + count);

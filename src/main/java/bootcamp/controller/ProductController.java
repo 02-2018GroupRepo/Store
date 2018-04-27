@@ -29,11 +29,6 @@ public class ProductController {
     	return inventoryList.get(id-1);
     }
 
-	@RequestMapping(value ="/test", produces = {MediaType.APPLICATION_JSON_VALUE, "application/hal+json"})
-	public List<Product> test(){
-		return productService.getListOfThings();
-	}
-
 
 	@RequestMapping("/product")
 	public List<Product> getProductList(){

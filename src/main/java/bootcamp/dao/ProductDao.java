@@ -18,13 +18,7 @@ public class ProductDao {
 	
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
-	
-	@Value("#{'${listOfThings}'.split(',')}")
-	private List<String> listOfThings;
-	
-	@Autowired
-	private List<Product> items;
-	
+
 	public List<Product> getProducts() {
 		return jdbcTemplate.query(GET_PRODUCTS, new BeanPropertyRowMapper<>(Product.class));
 	}
@@ -33,12 +27,5 @@ public class ProductDao {
 		return jdbcTemplate.queryForObject(GET_PRODUCT_BY_ID_SQL, new Object[] {id}, new BeanPropertyRowMapper<>(Product.class));
 	}
 	
-	public List<String> getListOfThings(){
-		return listOfThings;
-	}
-	
-	public List<Product> getListOfProducts(){
-		return items;
-	}
 
 }

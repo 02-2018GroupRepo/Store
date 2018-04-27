@@ -27,13 +27,7 @@ public class ProductService {
 		return dao.getProductById(id);
 	}
 	
-	public List<Product> getListOfThings(){
-		return dao.getListOfProducts();
-	}
-	
-	public List<String> getListOfOtherThings(){
-		return dao.getListOfThings();
-	}
+
 	
 	public List<Product> getProducts() {
 		return dao.getProducts();

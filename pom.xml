@@ -97,6 +97,8 @@
 	</dependencies>
 
 	<properties>
+		<docker.image.prefix>vicblacknall</docker.image.prefix>
+
 		<java.version>1.8</java.version>
 	</properties>
 
@@ -133,10 +135,29 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<useFile>false</useFile>
+					<skipTests>true</skipTests>
 					<includes>
 						<include>**/*Test*.java</include>
 						<include>**/*Spec.java</include>
 					</includes>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+
+			<!-- expose the jar to  the build file-->
+			<plugin>
+				<groupId>com.spotify</groupId>
+				<artifactId>dockerfile-maven-plugin</artifactId>
+				<version>1.3.6</version>
+				<configuration>
+					<repository>vicblacknall/store</repository>
+					<buildArgs>
+						<JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
+					</buildArgs>
 				</configuration>
 			</plugin>
 		</plugins>
